@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	avail "github.com/ethereum-optimism/optimism/op-batcher/avail"
+	avail "github.com/ethereum-optimism/optimism/op-batcher/avail/helpers"
 	"github.com/ethereum-optimism/optimism/op-batcher/metrics"
 	"github.com/ethereum-optimism/optimism/op-node/eth"
 	"github.com/ethereum-optimism/optimism/op-node/rollup/derive"
@@ -398,10 +398,14 @@ func (l *BatchSubmitter) sendTransaction(txdata txData, queue *txmgr.Queue[txDat
 
 	//Submitting data to Avail
 	fmt.Println(len(data))
-	err = avail.SubmitData(data, "wss://kate.avail.tools:443/ws", "gas evoke arm wild game unaware ask elite chest beauty flash banner", 0)
+	err = avail.SubmitData(data)
 	if err != nil {
 		panic(fmt.Sprintf("cannot submit data:%v", err))
 	}
+
+}
+
+func submitDataToAvailDA(data []byte) {
 
 }
 

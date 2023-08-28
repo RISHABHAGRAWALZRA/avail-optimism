@@ -6,10 +6,34 @@ import (
 	gsrpc "github.com/centrifuge/go-substrate-rpc-client/v4"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/signature"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
+	"github.com/ethereum-optimism/optimism/op-batcher/avail/internal/config"
 )
 
+var localNonce uint32 = 0
+
+func getAccountNonce(accountNonce uint32) uint32 {
+	if accountNonce > localNonce {
+		localNonce = accountNonce
+		return accountNonce
+	}
+	localNonce++
+	return localNonce
+}
+
 // submitData creates a transaction and makes a Avail data submission
-func SubmitData(data []byte, ApiURL string, Seed string, AppID int) error {
+func SubmitData(data []byte) error {
+
+	var config config.Config
+	err := config.GetConfig("./avail/config.json")
+	if err != nil {
+		panic(fmt.Sprintf("cannot get config:%v", err))
+	}
+
+	//Intitializing variables
+	ApiURL := config.ApiURL
+	Seed := config.Seed
+	AppID := config.AppID
+
 	api, err := gsrpc.NewSubstrateAPI(ApiURL)
 	if err != nil {
 		return fmt.Errorf("cannot create api:%w", err)
@@ -26,7 +50,7 @@ func SubmitData(data []byte, ApiURL string, Seed string, AppID int) error {
 		appID = AppID
 	}
 
-	c, err := types.NewCall(meta, "DataAvailability.submit_data", types.NewBytes(data))
+	c, err := types.NewCall(meta, "DataAvailability.submit_data", types.NewBytes([]byte(data)))
 	if err != nil {
 		return fmt.Errorf("cannot create new call:%w", err)
 	}
@@ -61,7 +85,8 @@ func SubmitData(data []byte, ApiURL string, Seed string, AppID int) error {
 		return fmt.Errorf("cannot get latest storage:%w", err)
 	}
 
-	nonce := uint32(accountInfo.Nonce)
+	nonce := getAccountNonce(uint32(accountInfo.Nonce))
+	//fmt.Println("Nonce from localDatabase:", nonce, "    ::::::::   from acountInfo:", accountInfo.Nonce)
 	o := types.SignatureOptions{
 		BlockHash:          genesisHash,
 		Era:                types.ExtrinsicEra{IsMortalEra: false},
@@ -84,7 +109,8 @@ func SubmitData(data []byte, ApiURL string, Seed string, AppID int) error {
 	if err != nil {
 		return fmt.Errorf("cannot submit extrinsic:%w", err)
 	}
-	fmt.Printf("Data submitted by Alice: %v against appID %v  sent with hash %#x\n", data, appID, hash)
+
+	fmt.Printf("Data of length %v submitted by op-batcher using appID %v sent with hash %#x\n", len(data), appID, hash)
 
 	return nil
 }

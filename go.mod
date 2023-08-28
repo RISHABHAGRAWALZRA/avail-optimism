@@ -166,7 +166,7 @@ require (
 	github.com/tklauser/go-sysconf v0.3.10 // indirect
 	github.com/tklauser/numcpus v0.5.0 // indirect
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
-	github.com/vedhavyas/go-subkey v1.0.4 // indirect
+	github.com/vedhavyas/go-subkey v1.0.3 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
@@ -191,4 +191,4 @@ require (
 replace github.com/ethereum/go-ethereum v1.11.6 => github.com/ethereum-optimism/op-geth v1.101106.0-rc.2
 
 //replace github.com/ethereum/go-ethereum v1.11.6 => ../go-ethereum
-replace github.com/centrifuge/go-substrate-rpc-client/v4 => /Users/rishabhagrawal/Data/Workspace/Avail/Exploration/Op-Stack/Goerli/gsrpc/go-substrate-rpc-client
+replace github.com/centrifuge/go-substrate-rpc-client/v4 => github.com/availproject/go-substrate-rpc-client/v4 v4.0.12-avail-1.4.0-rc1-5e286e3
