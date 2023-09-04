@@ -2,6 +2,7 @@ package batcher
 
 import (
 	"context"
+
 	"errors"
 	"fmt"
 	"io"
@@ -10,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	avail "github.com/ethereum-optimism/optimism/op-batcher/avail/helpers"
 	"github.com/ethereum-optimism/optimism/op-batcher/metrics"
 	"github.com/ethereum-optimism/optimism/op-node/eth"
 	"github.com/ethereum-optimism/optimism/op-node/rollup/derive"
@@ -395,18 +395,6 @@ func (l *BatchSubmitter) sendTransaction(txdata txData, queue *txmgr.Queue[txDat
 		GasLimit: intrinsicGas,
 	}
 	queue.Send(txdata, candidate, receiptsCh)
-
-	//Submitting data to Avail
-	fmt.Println(len(data))
-	err = avail.SubmitData(data)
-	if err != nil {
-		panic(fmt.Sprintf("cannot submit data:%v", err))
-	}
-
-}
-
-func submitDataToAvailDA(data []byte) {
-
 }
 
 func (l *BatchSubmitter) handleReceipt(r txmgr.TxReceipt[txData]) {

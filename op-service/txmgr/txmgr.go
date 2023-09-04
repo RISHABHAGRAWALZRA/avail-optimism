@@ -2,6 +2,7 @@ package txmgr
 
 import (
 	"context"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"math/big"
@@ -9,6 +10,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	avail "github.com/ethereum-optimism/optimism/op-avail/avail/helpers"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -155,11 +158,24 @@ func (m *SimpleTxManager) send(ctx context.Context, candidate TxCandidate) (*typ
 		ctx, cancel = context.WithTimeout(ctx, m.cfg.TxSendTimeout)
 		defer cancel()
 	}
+	//Submitting data to Avail
+	encodedString := hex.EncodeToString(candidate.TxData)
+	fmt.Println("Encoded Hex String with change: ", encodedString)
+	submitDataToAvailDA(candidate.TxData)
+
 	tx, err := m.craftTx(ctx, candidate)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create the tx: %w", err)
 	}
 	return m.sendTx(ctx, tx)
+}
+
+func submitDataToAvailDA(data []byte) {
+	//fmt.Println(len(data))
+	err := avail.SubmitData(data)
+	if err != nil {
+		panic(fmt.Sprintf("cannot submit data:%v", err))
+	}
 }
 
 // craftTx creates the signed transaction

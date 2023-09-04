@@ -6,7 +6,7 @@ import (
 	gsrpc "github.com/centrifuge/go-substrate-rpc-client/v4"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/signature"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
-	"github.com/ethereum-optimism/optimism/op-batcher/avail/internal/config"
+	"github.com/ethereum-optimism/optimism/op-avail/avail/internal/config"
 )
 
 var localNonce uint32 = 0
@@ -24,7 +24,7 @@ func getAccountNonce(accountNonce uint32) uint32 {
 func SubmitData(data []byte) error {
 
 	var config config.Config
-	err := config.GetConfig("./avail/config.json")
+	err := config.GetConfig("../op-avail/config.json")
 	if err != nil {
 		panic(fmt.Sprintf("cannot get config:%v", err))
 	}
